@@ -1,0 +1,578 @@
+[
+    {
+        "id": "5c03ad2a7ce62c9d",
+        "type": "tab",
+        "label": "NCD - MaintainX",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c147268a7a1d5670",
+        "type": "change",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "get-uptime",
+        "rules": [
+            {
+                "t": "set",
+                "p": "value",
+                "pt": "msg",
+                "to": "payload.sensor_data.ct_input_uptime",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 220,
+        "wires": [
+            [
+                "472d62c2c316792f"
+            ]
+        ]
+    },
+    {
+        "id": "34d87359cd50a3e9",
+        "type": "function",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "MaintainX",
+        "func": "// Reference\n// https://api.getmaintainx.com/v1/docs#tag/Meters/paths/~1meterreadings/post\n// MAINTAINX - METER READINGS\n\nmsg.payload = [\n    {\n        \"meterId\": msg.meterId,\n        \"value\": msg.value,\n        \"readingDate\": new Date(msg.payload.received).toISOString()\n    }\n]\n// Endpoint\nmsg.url = \"https://api.getmaintainx.com/v1/meterreadings\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1500,
+        "y": 220,
+        "wires": [
+            [
+                "bcf573aab316763f",
+                "84deb0ce607071f6"
+            ]
+        ],
+        "icon": "font-awesome/fa-file-excel-o"
+    },
+    {
+        "id": "84deb0ce607071f6",
+        "type": "http request",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "MaintainX - POST",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "bearer",
+        "senderr": false,
+        "headers": [],
+        "x": 1790,
+        "y": 220,
+        "wires": [
+            [
+                "edf02afd37a02287"
+            ]
+        ],
+        "icon": "font-awesome/fa-file-excel-o"
+    },
+    {
+        "id": "edf02afd37a02287",
+        "type": "switch",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "response-handler",
+        "property": "statusCode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "201",
+                "vt": "num"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2030,
+        "y": 220,
+        "wires": [
+            [
+                "9bb920e70567d8e9"
+            ],
+            [
+                "c4bc432a508d13d1"
+            ]
+        ]
+    },
+    {
+        "id": "e46d7f1b256e8269",
+        "type": "change",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "get-counter",
+        "rules": [
+            {
+                "t": "set",
+                "p": "value",
+                "pt": "msg",
+                "to": "payload.sensor_data.ct_input_counter",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 160,
+        "wires": [
+            [
+                "d28a2c8563f71f8e"
+            ]
+        ]
+    },
+    {
+        "id": "31381d7444a38486",
+        "type": "change",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "get-battery",
+        "rules": [
+            {
+                "t": "set",
+                "p": "value",
+                "pt": "msg",
+                "to": "payload.battery_percent",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "value",
+                "pt": "msg",
+                "to": "$number(value)",
+                "tot": "jsonata"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 890,
+        "y": 280,
+        "wires": [
+            [
+                "0d0befddd0fdcea7"
+            ]
+        ]
+    },
+    {
+        "id": "bcf573aab316763f",
+        "type": "debug",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "meter_reading_format",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1700,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "6f0e8885d1cbbd89",
+        "type": "switch",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "filter-sensor-data",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "sensor_data",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 610,
+        "y": 220,
+        "wires": [
+            [
+                "e46d7f1b256e8269",
+                "c147268a7a1d5670",
+                "31381d7444a38486"
+            ]
+        ]
+    },
+    {
+        "id": "c2d8cc5305fc37d1",
+        "type": "delay",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "3",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1225,
+        "y": 220,
+        "wires": [
+            [
+                "96e5c8bfca9c2315"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "313f0183761cb3b4",
+        "type": "delay",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1225,
+        "y": 280,
+        "wires": [
+            [
+                "96e5c8bfca9c2315"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "50715cd9016481f4",
+        "type": "delay",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1225,
+        "y": 160,
+        "wires": [
+            [
+                "96e5c8bfca9c2315"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "51aa1c1297351897",
+        "type": "comment",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "Set sensor_data here",
+        "info": "",
+        "x": 920,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "5a7250487c7fee6e",
+        "type": "comment",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "Format meter readings ",
+        "info": "",
+        "x": 1540,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "d28a2c8563f71f8e",
+        "type": "change",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "set-meter-id",
+        "rules": [
+            {
+                "t": "set",
+                "p": "meterId",
+                "pt": "msg",
+                "to": "",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1110,
+        "y": 160,
+        "wires": [
+            [
+                "50715cd9016481f4"
+            ]
+        ]
+    },
+    {
+        "id": "472d62c2c316792f",
+        "type": "change",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "set-meter-id",
+        "rules": [
+            {
+                "t": "set",
+                "p": "meterId",
+                "pt": "msg",
+                "to": "",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1110,
+        "y": 220,
+        "wires": [
+            [
+                "c2d8cc5305fc37d1"
+            ]
+        ]
+    },
+    {
+        "id": "0d0befddd0fdcea7",
+        "type": "change",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "set-meter-id",
+        "rules": [
+            {
+                "t": "set",
+                "p": "meterId",
+                "pt": "msg",
+                "to": "",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1110,
+        "y": 280,
+        "wires": [
+            [
+                "313f0183761cb3b4"
+            ]
+        ]
+    },
+    {
+        "id": "9bb920e70567d8e9",
+        "type": "json",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 2175,
+        "y": 180,
+        "wires": [
+            [
+                "23941958c43eebd3"
+            ]
+        ],
+        "l": false
+    },
+    {
+        "id": "23941958c43eebd3",
+        "type": "switch",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "new-reading-response",
+        "property": "payload[0]",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "hask",
+                "v": "meterId",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2320,
+        "y": 180,
+        "wires": [
+            [
+                "a47155ed58909f57"
+            ]
+        ]
+    },
+    {
+        "id": "a47155ed58909f57",
+        "type": "debug",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "reading_response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2530,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "96e5c8bfca9c2315",
+        "type": "function",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "validator",
+        "func": "if(msg.meterId != \"\" && msg.value != \"\"){\n    return msg;\n}\nelse{\n    node.error(\"meterId and value are required\", msg);\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1360,
+        "y": 220,
+        "wires": [
+            [
+                "34d87359cd50a3e9"
+            ]
+        ]
+    },
+    {
+        "id": "48b5602f80b23b14",
+        "type": "comment",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "Set merer IDs here",
+        "info": "",
+        "x": 1130,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "31f875deb1746257",
+        "type": "comment",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "Flow to create new meter readings",
+        "info": "",
+        "x": 660,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "c272c1c33649bed1",
+        "type": "comment",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "MaintainX credentials here",
+        "info": "",
+        "x": 1810,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "9b04d117b53ac601",
+        "type": "comment",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "Requirements",
+        "info": "MaintainX \n- Automated Meter Created (ID)",
+        "x": 590,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "c4bc432a508d13d1",
+        "type": "debug",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "response_error",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2260,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "3c99ea970742b2ca",
+        "type": "ncd-gateway-node",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "",
+        "connection": "",
+        "unknown_devices": 0,
+        "outputs": 1,
+        "x": 190,
+        "y": 220,
+        "wires": [
+            [
+                "1f54a9142dcba352"
+            ]
+        ]
+    },
+    {
+        "id": "1f54a9142dcba352",
+        "type": "debug",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "7faae42b7ba1463b",
+        "type": "comment",
+        "z": "5c03ad2a7ce62c9d",
+        "name": "Select the Serial Device",
+        "info": "",
+        "x": 180,
+        "y": 180,
+        "wires": []
+    }
+]
